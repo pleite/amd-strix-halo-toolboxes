@@ -5,13 +5,21 @@ on:
     inputs:
       backends:
         description: >
-          Comma-separated backends to build (e.g. "rocm-7.2.4-rocmfp4", "rocm-7.2.4-turboquant").
+          Comma-separated backends to build (e.g. "rocm-7.2.4-diffusion", "rocm-7.2.4-rocmfp4", "rocm-7.2.4-turboquant").
           Use "all" to build everything (defaults to stable branches).
         required: false
         default: all
+      registry:
+        description: >
+          Container registry/repository to publish to (e.g. "docker.io/<your-user>/amd-strix-halo-toolboxes").
+          Leave empty to use the DOCKERHUB_REPO repository variable, or the default below.
+        required: false
+        default: ""
 
 env:
-  DOCKERHUB_REPO: docker.io/kyuz0/amd-strix-halo-toolboxes
+  # Registry can be overridden per-run via the "registry" input, or repo-wide via
+  # the DOCKERHUB_REPO repository variable. Falls back to the default below.
+  DOCKERHUB_REPO: ${{ inputs.registry != '' && inputs.registry || (vars.DOCKERHUB_REPO != '' && vars.DOCKERHUB_REPO || 'docker.io/kyuz0/amd-strix-halo-toolboxes') }}
   LOCAL_PREFIX: llama
 
 jobs:
