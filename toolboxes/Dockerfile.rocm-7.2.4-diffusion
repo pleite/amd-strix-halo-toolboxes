@@ -58,7 +58,7 @@ COPY llama-grammar.patch /tmp/llama-grammar.patch
 # diverged PR branch does not break the build.
 RUN git clean -xdf \
   && git submodule update --recursive \
-  && (patch -p1 < /tmp/llama-grammar.patch || echo "grammar patch skipped (does not apply to PR branch)") \
+  && (patch -p1 < /tmp/llama-grammar.patch || echo "Info: grammar patch not applicable to this PR branch") \
   && cmake -S . -B build \
   -DGGML_HIP=ON \
   -DAMDGPU_TARGETS=gfx1151 \

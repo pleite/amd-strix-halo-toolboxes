@@ -12,8 +12,8 @@ following the [Unsloth Gemma Diffusion llama.cpp guide](https://unsloth.ai/docs/
 > [!WARNING]
 > This is an **experimental / custom** toolbox. It tracks an open llama.cpp PR
 > and is built manually (not rebuilt automatically on upstream changes). The PR
-> reference can be overridden at build time with `--build-arg PR=<number>` (set
-> `PR=` empty to build plain `master` once the work is merged).
+> reference can be overridden at build time with `--build-arg PR=<number>` (pass
+> `--build-arg PR=""` to build plain `master` once the work is merged).
 
 ---
 
@@ -95,8 +95,9 @@ podman build --no-cache -t llama-rocm-7.2.4-diffusion -f Dockerfile.rocm-7.2.4-d
 
 Build options:
 
-* `--build-arg PR=24423` — the llama.cpp PR to build (default). Set `PR=` empty
-  to build plain `master`.
+* `--build-arg PR=24423` — the llama.cpp PR to build (default). Pass
+  `--build-arg PR=""` (or omit the argument and edit the default) to build plain
+  `master`.
 * `--build-arg REPO=...` / `--build-arg BRANCH=...` — alternate source.
 
 See [building.md](building.md) for general build notes.
