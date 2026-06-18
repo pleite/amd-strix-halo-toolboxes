@@ -11,19 +11,21 @@ on:
         default: all
       registry:
         description: >
-          Container registry/repository to publish to (e.g. "docker.io/<your-user>/amd-strix-halo-toolboxes").
-          Leave empty to use the DOCKERHUB_REPO repository variable, or the default below.
+          Container registry/repository to publish to.
+          Example: "ghcr.io/pleite/amd-strix-halo-toolboxes"
+          Leave empty to use GHCR for this repository owner.
         required: false
         default: ""
 
+permissions:
+  contents: read
+  packages: write
+
 env:
-  # Registry can be overridden per-run via the "registry" input, or repo-wide via
-  # the DOCKERHUB_REPO repository variable. Falls back to the default below.
-  DOCKERHUB_REPO: ${{ inputs.registry != '' && inputs.registry || (vars.DOCKERHUB_REPO != '' && vars.DOCKERHUB_REPO || 'docker.io/kyuz0/amd-strix-halo-toolboxes') }}
+  REGISTRY_REPO: ${{ inputs.registry != '' && inputs.registry || format('ghcr.io/{0}/amd-strix-halo-toolboxes', github.repository_owner) }}
   LOCAL_PREFIX: llama
 
 jobs:
-  # 1) Prepare a clean JSON array for the matrix
   prepare:
     runs-on: ubuntu-latest
     outputs:
@@ -32,13 +34,11 @@ jobs:
       - id: mk
         shell: bash
         run: |
-          # Input from the Run workflow form
           IN='${{ inputs.backends }}'
 
           if [[ "$IN" == "all" || -z "$IN" ]]; then
             JSON='["rocm-6.4.4","rocm-7.2.4","rocm7-nightlies","vulkan-amdvlk","vulkan-radv"]'
           else
-            # Remove spaces and build JSON array from comma list
             IN_CLEAN=$(echo "$IN" | tr -d '[:space:]')
             JSON='["'${IN_CLEAN//,/\",\"}'"]'
           fi
@@ -46,7 +46,6 @@ jobs:
           echo "matrix_json=${JSON}" >> "$GITHUB_OUTPUT"
           echo "Using matrix: ${JSON}"
 
-  # 2) Build each backend in parallel using the prepared matrix
   build-and-push:
     needs: prepare
     runs-on: ubuntu-latest
@@ -69,13 +68,14 @@ jobs:
           echo "After cleanup:" && df -h /
 
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set build timestamp
         run: echo "BUILD_TS=$(date +%Y%m%dT%H%M%S)" >> $GITHUB_ENV
@@ -90,8 +90,8 @@ jobs:
           NAME="${B}"
           LI="${LOCAL_PREFIX}-${NAME}"
           TAG="${NAME}_${BUILD_TS}"
-          IMM="${DOCKERHUB_REPO}:${TAG}"
-          CHN="${DOCKERHUB_REPO}:${NAME}"
+          IMM="${REGISTRY_REPO}:${TAG}"
+          CHN="${REGISTRY_REPO}:${NAME}"
 
           echo "→ Building ${DF}"
           docker build --no-cache -t "${LI}" -f "${DF}" .
