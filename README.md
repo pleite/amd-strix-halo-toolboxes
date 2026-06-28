@@ -70,6 +70,7 @@ These are experimental or custom builds. They are not rebuilt automatically on e
 | :--- | :--- | :--- |
 | `rocm-7.2.4-diffusion` | ROCm 7.2.4 (Custom) | Diffusion LLM build with `llama-diffusion-cli` from the [Gemma Diffusion PR](https://github.com/ggml-org/llama.cpp/pull/24423). See [docs/diffusion.md](docs/diffusion.md). Manual build only. |
 | `rocm-7.2.4-rocmfp4` | ROCm 7.2.4 (Custom) | Custom `charlie12345/rocmfp4-llama` build supporting ROCmFP4 tensor types and draft-MTP. Manual build only. |
+| `rocm-7.2.4-rocmfpx` | ROCm 7.2.4 (Custom) | Custom `charlie12345/ROCmFPX` build supporting ROCmFPX-family quantization types for AMD hardware. Manual build only. |
 | `rocm-7.2.4-turboquant` | ROCm 7.2.4 (Custom) | Custom TurboQuant build for AMD Strix Halo. Manual build only. |
 | `rocm7-nightlies` | ROCm 7 Nightly | Tracks ROCm nightly builds. Includes patch for **kernel 6.18.4+** support. *Warning: currently has memory limit bug.* |
 
