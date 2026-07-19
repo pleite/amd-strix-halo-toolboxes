@@ -20,7 +20,7 @@ ARG REPO=https://github.com/Nathanw1014/llama.cpp.git
 ARG BRANCH=strix-halo-fa-fixes
 RUN git clone -b ${BRANCH} --single-branch --recursive ${REPO} .
 
-COPY llama-grammar.patch /tmp/llama-grammar.patch
+COPY toolboxes/llama-grammar.patch /tmp/llama-grammar.patch
 
 # build
 RUN git clean -xdf \
